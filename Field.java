@@ -11,8 +11,8 @@ public class Field {
     private Semaphore[][] sems = new Semaphore[11][12];
 
     public Field() {
-        for (int i = 0; i < 11; i++) {
-            for (int j = 0; j < 12; j++) {
+        for (int i = 0; i < sems.length; i++) {
+            for (int j = 0; j < sems[i].length; j++) {
                 sems[i][j] = new Semaphore(1);
             }
         }

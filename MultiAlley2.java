@@ -17,22 +17,15 @@ public class MultiAlley2 extends Alley {
     /* Block until car no. may enter alley */
     public void enter(int no) throws InterruptedException {
         if (no < 5) {
-            Thread.sleep(10);
             downSem.P();
             Thread.sleep(1000);
             if (down == 0) upSem.P();    // block for up-going cars
-            Thread.sleep(500);
             down++;
-            Thread.sleep(1000);
             downSem.V();
         } else {
-            Thread.sleep(10);
             upSem.P();
-            //Thread.sleep(1000);
             if (up == 0) downSem.P();    // block for down-going cars
-            Thread.sleep(500);
             up++;
-            Thread.sleep(1000);
             upSem.V();
         }
     }
