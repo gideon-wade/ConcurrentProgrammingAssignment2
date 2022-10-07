@@ -7,7 +7,7 @@
 
 public class Semaphore {
 
-    private int s = 0;
+    public int s = 0;
 
     public Semaphore(int s0) {
         if (s0 >= 0) 

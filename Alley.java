@@ -9,7 +9,7 @@ public class Alley {
     protected Alley() { }
 
     public static Alley create() {
-        return new MonoAlley();        // Change to use desired implementation
+        return new MultiAlley2();        // Change to use desired implementation
 
     }
 
