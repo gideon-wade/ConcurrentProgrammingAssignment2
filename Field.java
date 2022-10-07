@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Field {
-    private int[][] grid = new int[11][12];
     private Semaphore[][] sems = new Semaphore[11][12];
 
     public Field() {
