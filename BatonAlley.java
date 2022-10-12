@@ -6,69 +6,62 @@
 
 public class BatonAlley extends Alley {
 
-    int nu, nd; //Number of cars going up/down
-    Semaphore e, up, down;
-    int du,dd; //Number of waiting cars up/down
+    int nUp, nDown; //Number of cars going up/down
+    Semaphore e, upSem, downSem;
+    int delayedUp, delayedDown; //Number of waiting cars up/down
 
     protected BatonAlley() {
-         nu = 0; nd = 0;
+         nUp = 0; nDown = 0;
          e = new Semaphore(1);
-         up = new Semaphore(0);
-         down = new Semaphore(0);
-         du = 0; dd = 0;
+         upSem = new Semaphore(0);
+         downSem = new Semaphore(0);
+         delayedUp = 0; delayedDown = 0;
     }
 
     /* Block until car no. may enter alley */
     public void enter(int no) throws InterruptedException {
-        if (no < 5) {
+        if (no < 5) { //Read
             e.P();
-            nd++;
-            if(nu > 0){
-                dd++;
+            if(nUp > 0){
+                delayedDown++;
                 e.V();
-                down.P();
+                downSem.P();
             }
-            nd++;
+            nDown++;
             signal();
-            //nd--; //Atomic?
+        } else { //Write
             e.P();
-            nd--;
-            signal();
-        } else {
-            e.P();
-            nu++;
-            if(nd > 0) {
-                du++;
+            if(nDown > 0) {
+                delayedUp++;
                 e.V();
-                up.P();
+                upSem.P();
             }
-            nu++;
-            signal();
-            //nu--; //Atomic?
-            e.P();
-            //nu--;
+            nUp++;
             signal();
         }
      }
-
+    //Signalling cars that alley is accessible.
      public void signal() throws InterruptedException {
-        e.P();
-         if(nu == 0 && dd > 0){
-             dd--;
-             down.V();
-         }else if(nd == 0 && du > 0) {
-             du--;
-             up.V();
+         if(nUp == 0 && delayedDown > 0){
+             delayedDown--;
+             downSem.V();
+         }else if(nDown == 0 && delayedUp > 0) {
+             delayedUp--;
+             upSem.V();
          }else{
              e.V();
          }
      }
     /* Register that car no. has left the alley */
-    public void leave(int no){
+    public void leave(int no) throws InterruptedException {
         if (no < 5) {
-            nd--;
+            e.P();
+            nDown--;
+            signal();
         } else {
-            nu--;
+            e.P();
+            nUp--;
+            signal();
         }
     }
 }

@@ -17,6 +17,6 @@ public class Alley {
     public void enter(int no) throws InterruptedException { }
 
     /* Register that car no. has left the alley */
-    public void leave(int no) { }
+    public void leave(int no) throws InterruptedException { }
     
 }
