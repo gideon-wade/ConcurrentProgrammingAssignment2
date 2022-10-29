@@ -45,23 +45,27 @@ public class BatonAlley extends Alley {
          if(nUp == 0 && delayedDown > 0){
              delayedDown--;
              downSem.V();
-         }else if(nDown == 0 && delayedUp > 0) {
+         } else if(nDown == 0 && delayedUp > 0) {
              delayedUp--;
              upSem.V();
-         }else{
+         } else{
              e.V();
          }
      }
     /* Register that car no. has left the alley */
-    public void leave(int no) throws InterruptedException {
-        if (no < 5) {
-            e.P();
-            nDown--;
-            signal();
-        } else {
-            e.P();
-            nUp--;
-            signal();
+    public void leave(int no)  {
+        try {
+            if (no < 5) {
+                e.P();
+                nDown--;
+                signal();
+            } else {
+                e.P();
+                nUp--;
+                signal();
+            }
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
     }
 }
