@@ -5,7 +5,6 @@
 //Hans Henrik Lovengreen     Sep 26, 2022
 
 public class BatonAlley extends Alley {
-
     int nUp, nDown; //Number of cars going up/down
     Semaphore e, upSem, downSem;
     int delayedUp, delayedDown; //Number of waiting cars up/down
@@ -20,7 +19,7 @@ public class BatonAlley extends Alley {
 
     /* Block until car no. may enter alley */
     public void enter(int no) throws InterruptedException {
-        if (no < 5) { //Read
+        if (no < 5) {
             e.P();
             if(nUp > 0){
                 delayedDown++;
@@ -28,8 +27,14 @@ public class BatonAlley extends Alley {
                 downSem.P();
             }
             nDown++;
-            signal();
-        } else { //Write
+
+            if(delayedDown > 0 && nUp == 0) {
+                delayedDown--;
+                downSem.V();
+            } else {
+                e.V();
+            }
+        } else {
             e.P();
             if(nDown > 0) {
                 delayedUp++;
@@ -37,20 +42,8 @@ public class BatonAlley extends Alley {
                 upSem.P();
             }
             nUp++;
-            signal();
+            e.V();
         }
-     }
-    //Signalling cars that alley is accessible.
-     public void signal() throws InterruptedException {
-         if(nUp == 0 && delayedDown > 0){
-             delayedDown--;
-             downSem.V();
-         } else if(nDown == 0 && delayedUp > 0) {
-             delayedUp--;
-             upSem.V();
-         } else{
-             e.V();
-         }
      }
     /* Register that car no. has left the alley */
     public void leave(int no)  {
@@ -58,11 +51,21 @@ public class BatonAlley extends Alley {
             if (no < 5) {
                 e.P();
                 nDown--;
-                signal();
+                if(delayedUp > 0 && nDown == 0 && nUp == 0) {
+                    delayedUp--;
+                    upSem.V();
+                } else{
+                    e.V();
+                }
             } else {
                 e.P();
                 nUp--;
-                signal();
+                if(delayedDown > 0 && nUp == 0){
+                    delayedDown--;
+                    downSem.V();
+                } else{
+                    e.V();
+                }
             }
         } catch (InterruptedException ex) {
             ex.printStackTrace();
